@@ -17,7 +17,7 @@ ENV WORK_PATH /workspace
 WORKDIR $WORK_PATH
 ENV PYTHONPATH "/workspace:${PYTHONPATH}"
 ENV PIP_OPTIONS "--no-cache-dir --progress-bar off"
-COPY ./gpu_pytorch/linux/requirements.txt $WORK_PATH/gpu_pytorch/linux/
+COPY ./docker/requirements.txt $WORK_PATH/gpu_pytorch/linux/
 RUN pip install ${PIP_OPTIONS} -r $WORK_PATH/gpu_pytorch/linux/requirements.txt && \
 		pip install ${PIP_OPTIONS} -U setuptools
 

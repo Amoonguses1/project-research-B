@@ -1,22 +1,41 @@
-IMAGE_NAME=gpu_pytorch_gan
-CONTAINER_NAME=gpu_pytorch_gan
+PROJECT_NAME=gpu_pytorch
+USER=haruki
+IMAGE_NAME=${USER}_${PROJECT_NAME}
+CONTAINER_NAME=${USER}_${PROJECT_NAME}
+PORT=8888
+SHM_SIZE=2g
 FORCE_RM=true
-
-stop:
-	docker stop $(CONTAINER_NAME)
 
 build:
 	docker build \
+		--build-arg USER_ID=$(shell id -u) \
+		--build-arg GROUP_ID=$(shell id -g) \
 		-f docker/Dockerfile \
-		-t $(IMAGE_NAME) \
-		--no-cache \
-		--force-rm=$(FORCE_RM) \
+		-t ${IMAGE_NAME} \
+		--force-rm=${FORCE_RM}\
 		.
+
+restart: stop run
+
 run:
-	docker run --rm -it  --gpus 1 -v \
-	$(pwd):/work gpu_pytorch_gan:latest
+	docker run \
+		-dit \
+		-v $(PWD):/workspace \
+		-p $(PORT):$(PORT) \
+		--name $(CONTAINER_NAME) \
+		--rm \
+		--shm-size $(SHM_SIZE) \
+		--platform=linux/amd64 \
+		$(IMAGE_NAME)
 
 exec:
 	docker exec \
-	  -it \
-  	$(CONTAINER_NAME) bash
+		-it \
+		$(CONTAINER_NAME) bash 
+
+stop:
+	docker stop $(IMAGE_NAME)
+
+run_jupyter:
+	jupyter nbextension enable --py widgetsnbextension
+	jupyter notebook --ip 0.0.0.0 --port ${PORT} --allow-root
