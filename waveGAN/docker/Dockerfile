@@ -8,9 +8,6 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -qq && \
     apt-get install -y curl git sudo tmux vim wget libglib2.0-0 libsm6 libxrender1 libxext6 libgl1-mesa-dev && \
-    apt-get install libsndfile-dev && \
-    apt-get install jq && \
-    apt-get install sox && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
 	rm -rf /var/cache/apk/*
@@ -23,7 +20,6 @@ ENV PIP_OPTIONS "--no-cache-dir --progress-bar off"
 COPY ./gpu_pytorch/linux/requirements.txt $WORK_PATH/gpu_pytorch/linux/
 RUN pip install ${PIP_OPTIONS} -r $WORK_PATH/gpu_pytorch/linux/requirements.txt && \
 		pip install ${PIP_OPTIONS} -U setuptools
-COPY . .
 
 # duser setting
 ARG USER_ID
